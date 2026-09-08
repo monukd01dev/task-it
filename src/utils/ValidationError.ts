@@ -1,14 +1,14 @@
 import { StatusCodes } from "http-status-codes";
 import AppError from "./AppError";
-import { ZodIssue } from "zod/v3";
+import * as z from "zod";
 
 
 class ValidationError extends AppError {
     public readonly fields: { field: string, message: string }[];
 
-    constructor(message: string, zodError: ZodIssue[]) {
+    constructor(message: string, zodError: z.ZodError) {
         super(message, StatusCodes.BAD_REQUEST);
-        this.fields = zodError.map((issue) => ({
+        this.fields = zodError.issues.map((issue) => ({
             field: issue.path.join('.'),
             message: issue.message
         }))

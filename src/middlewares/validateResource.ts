@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { AnyZodObject, ZodError } from 'zod/v3';
+import * as z from 'zod';
 import CONSTANTS from '../constants';
 import ValidationError from '../utils/ValidationError';
 
 
-const validateResource = async (schema: AnyZodObject) =>
+const validateResource = async (schema: z.ZodType) =>
     (req: Request, res: Response, next: NextFunction) => {
         try {
             //checking the data against schema 
@@ -17,8 +17,8 @@ const validateResource = async (schema: AnyZodObject) =>
             next()
 
         } catch (error: unknown) {//any cause we can throw anything in js string, number...
-            if (error instanceof ZodError) {
-                return next(new ValidationError(CONSTANTS.ERRORS.VALIDATION_FAILED, error.errors))
+            if (error instanceof z.ZodError) {
+                return next(new ValidationError(CONSTANTS.ERRORS.VALIDATION_FAILED, error))
             }
             next(error)
         };

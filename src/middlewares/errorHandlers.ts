@@ -73,7 +73,7 @@ const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFun
                 data: null,
                 error: {
                     status: errorStatus,
-                    ...(err.fields && {fields : err.feilds})//if err.fields exist then spread the fields with err.fields as value
+                    ...(err.fields && {fields : err.fields})//if err.fields exist then spread the fields with err.fields as value
                 }
             });
         } else {
