@@ -13,7 +13,8 @@ const CONSTANTS = Object.freeze({
     ERRORS: Object.freeze({
         ROUTE_NOT_FOUND: 'The requested resource was not found.',
         INTERNAL_SERVER: 'An unexpected internal server error occurred.',
-        RATE_LIMIT_EXCEEDED: 'Too many requests from this IP, please try again later.'
+        RATE_LIMIT_EXCEEDED: 'Too many requests from this IP, please try again later.',
+        VALIDATION_FAILED : 'Validatin failed.'
     } as const)
 } as const) ;
 

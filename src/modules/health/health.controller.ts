@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { NextFunction, Request, Response } from "express";
-import ENV from "../config/env";
+import ENV from "../../config/env";
 
 const healthCheck = async function (req: Request, res: Response, next: NextFunction) {
     try {
@@ -25,4 +25,4 @@ const healthCheck = async function (req: Request, res: Response, next: NextFunct
 
 };
 
-export default { healthCheck };
+export { healthCheck };
