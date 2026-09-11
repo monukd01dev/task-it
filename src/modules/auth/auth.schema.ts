@@ -1,6 +1,6 @@
 import * as z from 'zod';
 import { VALIDATION_ERRORS } from '../../utils/errorCode';
-
+import CONSTANTS from '../../constants';
 // Mononym safe, Unicode friendly, ReDoS immune name validator
 const namePrimitive = z.string({
     error: (issue) => issue.input === undefined
@@ -29,6 +29,14 @@ const passwordPrimitive = z.string({ error: VALIDATION_ERRORS.PASSWORD_REQUIRED 
     .refine(val => /\d/.test(val), {error:VALIDATION_ERRORS.PASSWORD_NO_NUMBER})
     .refine(val => /[@$!%*?&]/.test(val), {error:VALIDATION_ERRORS.PASSWORD_NO_SPECIAL});
 
+const otpPrimitive = z.string({ 
+    error : (issue) => issue.input === undefined 
+    ? CONSTANTS.VALIDATION_ERRORS.OTP_REQUIRED
+    : CONSTANTS.VALIDATION_ERRORS.OTP_FORMAT
+ })
+    .length(6, { message: CONSTANTS.VALIDATION_ERRORS.OTP_LENGTH })
+    .regex(/^\d+$/, { message: CONSTANTS.VALIDATION_ERRORS.OTP_FORMAT });
+
 export const signupSchema = z.object({
     body: z.strictObject({
         name: namePrimitive,
@@ -43,5 +51,12 @@ export const loginSchema = z.object({
         password: passwordPrimitive,
     })
 })
+
+export const verifyOtpSchema = z.object({
+    body: z.strictObject({
+        email: emailPrimitive,
+        otp: otpPrimitive
+    })
+});
 
 
