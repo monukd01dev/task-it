@@ -25,7 +25,7 @@ process.env.NODE_ENV = currentEnv;
 // ==========================================
 // 2. HELPER FUNCTION (For other variables)
 // ==========================================
-function requireEnvVar(envName:string):string {
+function requireEnvVar(envName: string): string {
     const val = process.env[envName];
     if (!val) {
         console.error(`💥 FATAL ERROR: ${envName} is missing in .env file!`);
@@ -48,6 +48,9 @@ const ENV = Object.freeze({
     DB_URI,
     JWT_SECRET,
     CORS_ORIGIN: currentEnv === 'development' ? ['http://localhost:5173', 'http://127.0.0.1:5173'] : [process.env.CORS_ORIGIN as string],
+    //mail
+    SMTP_USER: process.env.SMTP_USER,
+    SMTP_PASS: process.env.SMTP_PASS,
 
 } as const)
 
