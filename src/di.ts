@@ -1,23 +1,43 @@
 //central dependency injection center 
 //here we use singleton pattern to for dependency injection
 
-import { IOtpRepository } from "./modules/auth/auth.types";
+import { AuthServiceImpl } from "./modules/auth/auth.service";
+import { IAuthService, IOtpRepository } from "./modules/auth/auth.types";
 import { OtpModel } from "./modules/auth/otp.model";
 import OtpRepositoryImpl from "./modules/auth/otp.repository";
 import { UserModel } from "./modules/users/user.model";
 import UserRepositoryImpl from "./modules/users/user.repository";
 import { IUserRepository } from "./modules/users/user.types";
+import { PasswordServiceImpl } from "./services/crypto/bcryptPassoword.service";
+import { IOtpService, IPasswordService, ITokenService } from "./services/crypto/crypto.types";
+import { TokenServiceImpl } from "./services/crypto/jwtToken.service";
+import { OtpServiceImpl } from "./services/crypto/otp.service";
+import { IMailerService } from "./services/mailer/mailer.types";
+import NodemailerService from "./services/mailer/nodemailer.service";
 
 class DependencyInjector {
     private static instance: DependencyInjector;
 
-    public readonly userRepository: IUserRepository;
-    public readonly otpRepository: IOtpRepository;
+    private readonly userRepository: IUserRepository;
+    private readonly otpRepository: IOtpRepository;
+    private readonly mailerService: IMailerService;
+    private readonly otpService: IOtpService;
+    private readonly passwordService: IPasswordService;
+    private readonly tokenService: ITokenService;
 
+    private readonly authService: IAuthService;
     private constructor() {
-        //creating repositories with their required models
+        // repositories 
         this.userRepository = new UserRepositoryImpl(UserModel);
         this.otpRepository = new OtpRepositoryImpl(OtpModel);
+        //services
+        this.mailerService = new NodemailerService();
+        this.otpService = new OtpServiceImpl();
+        this.passwordService = new PasswordServiceImpl();
+        this.tokenService = new TokenServiceImpl();
+        this.authService = new AuthServiceImpl(this.userRepository, this.otpRepository, this.mailerService, this.otpService, this.passwordService, this.tokenService);
+        
+        //controllers
     }
 
     public static getInstance(): DependencyInjector {
