@@ -22,10 +22,14 @@ class OtpRepositoryImpl implements IOtpRepository {
         return await this.model.findOne({ email, otp });
     };
 
+    async findOtpByEmail(email: string): Promise<IOtpDocument | null> {
+        return await this.model.findOne({email});
+    };
+
     //deleting the otp after verification
     async deleteOtp(email: string): Promise<void> {
-        await this.model.deleteMany({email})
-    }
+        await this.model.deleteMany({email});
+    };
 
 };
 

@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document} from "mongoose";
 
 
 
@@ -8,7 +8,7 @@ export interface IUserDocument extends Document {
     password?: string,
     googleId?: string,
     role: "user" | "admin",
-    isVarified: boolean,
+    isVerified: boolean,
     tokenVersion: number,
     createdAt: Date,
     updatedAt: Date,

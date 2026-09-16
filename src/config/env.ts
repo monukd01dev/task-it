@@ -37,6 +37,7 @@ function requireEnvVar(envName: string): string {
 //checking all reuired variables
 const DB_URI = requireEnvVar('DB_URI');
 const JWT_SECRET = requireEnvVar('JWT_SECRET');
+const JWT_REFRESH_SECRET = requireEnvVar('JWT_REFRESH_SECRET')
 
 const ENV = Object.freeze({
     NODE_ENV: currentEnv as Environment,
@@ -47,6 +48,9 @@ const ENV = Object.freeze({
     LOG_LEVEL: process.env.LOG_LEVEL || 'info',
     DB_URI,
     JWT_SECRET,
+    JWT_REFRESH_SECRET,
+    JWT_ACCESS_EXPIRES_IN : process.env.JWT_ACCESS_EXPIRES_IN || '15m',
+    JWT_REFRESH_EXPIRES_IN : process.env.JWT_REFRESH_EXPIRES_IN || '7d',
     CORS_ORIGIN: currentEnv === 'development' ? ['http://localhost:5173', 'http://127.0.0.1:5173'] : [process.env.CORS_ORIGIN as string],
     //mail
     SMTP_USER: process.env.SMTP_USER,

@@ -27,7 +27,7 @@ const CONSTANTS = Object.freeze({
         // Email Errors
         EMAIL_REQUIRED: "Email is required.",
         EMAIL_INVALID: "Please enter a valid email.",
-
+        EMAIL_TOO_LONG: "Cannot Exceed 150 characters.",
         // Password Errors
         PASSWORD_REQUIRED: "Password is required.",
         PASSWORD_TOO_SHORT: "Must be at least 8 characters.",
@@ -40,7 +40,12 @@ const CONSTANTS = Object.freeze({
         //OTP Errors
         OTP_REQUIRED: "OTP is required.",
         OTP_LENGTH: "OTP must be exactly 6 digits.",
-        OTP_FORMAT: "OTP must contain only numbers."
+        OTP_FORMAT: "OTP must contain only numbers.",
+
+        //GOOGLE_AUTH
+        GOOGLE_TOKEN_REQUIRED: "Google ID Token is required",
+        GOOGLE_TOKEN_FORMAT: "Invalid Google ID Token format",
+        GOOGLE_TOKEN_TOO_LONG: "Google ID Token is too long",
 
     } as const)
 } as const);

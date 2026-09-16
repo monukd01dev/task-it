@@ -20,7 +20,7 @@ const otpSchema = new Schema<IOtpDocument>({
     createdAt :{
         type : Date,
         default : Date.now,
-        expires : 300,
+        expires : 300,//5 minutes
     }
 })
 
