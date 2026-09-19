@@ -3,22 +3,23 @@ import { Document} from "mongoose";
 
 
 export interface IUserDocument extends Document {
-    name: string,
-    email: string,
-    password?: string,
-    googleId?: string,
-    role: "user" | "admin",
-    isVerified: boolean,
-    tokenVersion: number,
-    createdAt: Date,
-    updatedAt: Date,
+    name: string;
+    email: string;
+    password?: string;
+    googleId?: string;
+    role: "user" | "admin";
+    isVerified: boolean;
+    tokenVersion: number;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface ICreateUserDTO {
-    name: string,
-    email: string,
-    password?: string,
-    googleId?: string,
+    name: string;
+    email: string;
+    password?: string;
+    googleId?: string;
+    isVerified?:boolean;
 }
 
 export interface IUserRepository {

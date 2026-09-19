@@ -14,6 +14,8 @@ import { TokenServiceImpl } from "./services/crypto/jwtToken.service";
 import { OtpServiceImpl } from "./services/crypto/otp.service";
 import { IMailerService } from "./services/mailer/mailer.types";
 import NodemailerService from "./services/mailer/nodemailer.service";
+import { GoogleAuthServiceImpl } from "./services/oauth/googleAuth.service";
+import { IOAuthService } from "./services/oauth/oauth.types";
 
 class DependencyInjector {
     private static instance: DependencyInjector;
@@ -24,6 +26,7 @@ class DependencyInjector {
     private readonly otpService: IOtpService;
     private readonly passwordService: IPasswordService;
     private readonly tokenService: ITokenService;
+    private readonly oAuthService: IOAuthService;
 
     private readonly authService: IAuthService;
     private constructor() {
@@ -35,7 +38,8 @@ class DependencyInjector {
         this.otpService = new OtpServiceImpl();
         this.passwordService = new PasswordServiceImpl();
         this.tokenService = new TokenServiceImpl();
-        this.authService = new AuthServiceImpl(this.userRepository, this.otpRepository, this.mailerService, this.otpService, this.passwordService, this.tokenService);
+        this.oAuthService = new GoogleAuthServiceImpl();
+        this.authService = new AuthServiceImpl(this.userRepository, this.otpRepository, this.mailerService, this.otpService, this.passwordService, this.tokenService,this.oAuthService);
         
         //controllers
     }

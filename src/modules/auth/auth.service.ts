@@ -6,6 +6,7 @@ import { AuthTokens, GoogleAuthInput, IAuthService, IOtpRepository, LoginInput, 
 import { IOtpService, IPasswordService, ITokenPayload, ITokenService } from "../../services/crypto/crypto.types";
 import logger from "../../config/logger";
 import { getOtpEmailTemplate } from "../../utils/email.templates";
+import { IOAuthService } from "../../services/oauth/oauth.types";
 
 
 
@@ -16,6 +17,7 @@ export class AuthServiceImpl implements IAuthService {
     private readonly otpService: IOtpService;
     private readonly passwordService: IPasswordService;
     private readonly tokenService: ITokenService;
+    private readonly oAuthService: IOAuthService;
     constructor(
         userRepository: IUserRepository,
         otpRepository: IOtpRepository,
@@ -23,6 +25,7 @@ export class AuthServiceImpl implements IAuthService {
         otpService: IOtpService,
         passwordService: IPasswordService,
         tokenService: ITokenService,
+        oAuthService: IOAuthService,
     ) {
         this.userRepository = userRepository;
         this.otpRepository = otpRepository;
@@ -30,6 +33,7 @@ export class AuthServiceImpl implements IAuthService {
         this.otpService = otpService;
         this.passwordService = passwordService;
         this.tokenService = tokenService;
+        this.oAuthService = oAuthService;
     }
 
     async signup(signupData: SignupInput): Promise<void> {
@@ -40,19 +44,19 @@ export class AuthServiceImpl implements IAuthService {
 
         if (existingUser) {
             if (existingUser.isVerified) {
-                logger.error({email}, "Verified user trying to singup again")
+                logger.error({ email }, "Verified user trying to singup again")
                 throw new AppError(ReasonPhrases.BAD_REQUEST, StatusCodes.BAD_REQUEST);
             }
             // if user already exist but not verfied hash the new password and update the existing detail and continue the otp flow
             const newHashedPassword = await this.passwordService.hash(password);
             await this.userRepository.updateById(existingUser._id.toString(), { password: newHashedPassword });
 
-            logger.info({email},"New password created and existing unverified user password updated")
+            logger.info({ email }, "New password created and existing unverified user password updated")
 
         } else {
             // 2. Hash the password using injected service
             const hashedPassword = await this.passwordService.hash(password);
-            
+
             // 3. Create unverified user
             await this.userRepository.create({
                 name,
@@ -84,7 +88,7 @@ export class AuthServiceImpl implements IAuthService {
         const user = await this.userRepository.findByEmail(email);
 
         if (!user || user.isVerified) {
-            logger.error({email},"Verified user tried to resend otp.")
+            logger.error({ email }, "Verified user tried to resend otp.")
             throw new AppError(ReasonPhrases.BAD_REQUEST, StatusCodes.BAD_REQUEST);
         }
 
@@ -103,14 +107,14 @@ export class AuthServiceImpl implements IAuthService {
         // Generate New OTP (all old otps will be deleted)
         const generatedOtpValue = this.otpService.generate();
         const otpRecord = await this.otpRepository.createOtp(email, generatedOtpValue);
-        logger.info({email},"New Otp generated.")
+        logger.info({ email }, "New Otp generated.")
         // Send Mail
         const mailSent = await this.mailerService.sendOtpMail(otpRecord.email, getOtpEmailTemplate(otpRecord.otp));
         if (!mailSent) {
             logger.error({ email }, "Failed to send OTP email during resend otp.");
             throw new AppError(ReasonPhrases.INTERNAL_SERVER_ERROR, StatusCodes.INTERNAL_SERVER_ERROR);
         }
-        logger.info({email}, "Resend Otp email send successfully")
+        logger.info({ email }, "Resend Otp email send successfully")
     }
 
     async verifyOtp(verifyData: VerfiyOtpInput): Promise<AuthTokens> {
@@ -141,13 +145,13 @@ export class AuthServiceImpl implements IAuthService {
 
         // 5. Update User Status
         const verifiedUser = await this.userRepository.updateById(
-            existingUser._id.toString(), 
+            existingUser._id.toString(),
             { isVerified: true }
         );
 
         // Failsafe: if update fails (DB issue)
         if (!verifiedUser) {
-            logger.error({email},"Failed to update user status")
+            logger.error({ email }, "Failed to update user status")
             throw new AppError(ReasonPhrases.INTERNAL_SERVER_ERROR, StatusCodes.INTERNAL_SERVER_ERROR);
         }
 
@@ -171,40 +175,40 @@ export class AuthServiceImpl implements IAuthService {
     }
 
     async login(loginData: LoginInput): Promise<AuthTokens> {
-        const {email, password} = loginData;
+        const { email, password } = loginData;
 
         //1. find the user 
         const user = await this.userRepository.findByEmail(email);
 
         //check if user exists
-        if(!user){
-            logger.warn({email},"Login failed: User not found.");
-            throw new AppError("Invalid email or password.",StatusCodes.UNAUTHORIZED);
+        if (!user) {
+            logger.warn({ email }, "Login failed: User not found.");
+            throw new AppError("Invalid email or password.", StatusCodes.UNAUTHORIZED);
         };
 
         //2. google OAuth user trying to local login 
-        if(!user?.password){
-            logger.warn({email},"Login failed: Attempted local login on Google Auth account.");
-            throw new AppError("Please login using Google.",StatusCodes.BAD_REQUEST);
+        if (!user?.password) {
+            logger.warn({ email }, "Login failed: Attempted local login on Google Auth account.");
+            throw new AppError("Please login using Google.", StatusCodes.BAD_REQUEST);
         };
 
         //3. isVerfied check 
-        if(!user.isVerified){
-            logger.warn({email},"Login failed : Unverified account.");
-            throw new AppError("Account pending for verification. Please verify your OTP.",StatusCodes.FORBIDDEN);
+        if (!user.isVerified) {
+            logger.warn({ email }, "Login failed : Unverified account.");
+            throw new AppError("Account pending for verification. Please verify your OTP.", StatusCodes.FORBIDDEN);
         };
 
         //4. isPassword match 
-        const isPasswordValid = await this.passwordService.compare(password,user.password);
-        if(!isPasswordValid){
-            logger.warn({email},"Login failed: Incorrect password");
-            throw new AppError("Invalid email or password.",StatusCodes.UNAUTHORIZED);
+        const isPasswordValid = await this.passwordService.compare(password, user.password);
+        if (!isPasswordValid) {
+            logger.warn({ email }, "Login failed: Incorrect password");
+            throw new AppError("Invalid email or password.", StatusCodes.UNAUTHORIZED);
         };
         //token payload creation
-        const tokenPayload:ITokenPayload = {
-            userId : user._id.toString(),
-            email : user.email,
-            role : user.role,
+        const tokenPayload: ITokenPayload = {
+            userId: user._id.toString(),
+            email: user.email,
+            role: user.role,
         };
 
         //5. creating tokens
@@ -221,11 +225,54 @@ export class AuthServiceImpl implements IAuthService {
     }
 
     async googleAuth(googleAuthData: GoogleAuthInput): Promise<AuthTokens> {
-        const {idToken} = googleAuthData;
-        try{
-            
-        }catch(error){
+        const { idToken } = googleAuthData;
 
+        const payload = await this.oAuthService.verifyIdToken(idToken);
+        const { email, name, sub } = payload;
+
+        let user = await this.userRepository.findByEmail(email);
+
+        if (!user) {
+            //we perform the signup flow
+            logger.info({ email }, "Creating new user via Google Auth.");
+
+            user = await this.userRepository.create({
+                name: name || "Google User",
+                email: email,
+                password: "",
+                googleId: sub,
+                isVerified: true,
+            })
+
+            if(!user) throw new AppError("Failed to create Google user", StatusCodes.INTERNAL_SERVER_ERROR);
+
+        }else{
+            logger.info({ email }, "User logged in via Google Auth.");
+            //login case 
+            //user can be an local auth user and unverified and choosed to use google auth 
+            if(!user.isVerified || !user.googleId ){
+                user = await this.userRepository.updateById(user._id.toString(),{
+                    isVerified:true,
+                    googleId:sub,
+                })
+            }
+            if(!user) throw new AppError("Failed to update user account.", StatusCodes.INTERNAL_SERVER_ERROR);
         }
+
+        //generate jwt token 
+        const tokenPayload:ITokenPayload =  {
+            userId : user._id.toString(),
+            email : user.email,
+            role : user.role,
+        };
+
+        const accessToken = this.tokenService.generateAccessToken(tokenPayload);
+        const refreshToken = this.tokenService.generateRefreshToken(tokenPayload);
+
+        logger.info({email},"Token generated Successfully.")
+        return {
+            accessToken,
+            refreshToken
+        };
     }
 }

@@ -55,7 +55,8 @@ const ENV = Object.freeze({
     //mail
     SMTP_USER: process.env.SMTP_USER,
     SMTP_PASS: process.env.SMTP_PASS,
-
+    // OAuth
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
 } as const)
 
 export default ENV;
