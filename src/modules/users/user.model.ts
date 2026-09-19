@@ -23,7 +23,7 @@ const userSchema = new Schema<IUserDocument>({
         enum: ['user', 'admin'],
         default: 'user',
     },
-    isVarified: {
+    isVerified: {
         type: Boolean,
         default: false,
     },

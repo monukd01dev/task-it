@@ -1,5 +1,5 @@
 //central dependency injection center 
-//here we use singleton pattern to for dependency injection
+//singleton pattern for dependency injection
 
 import { AuthServiceImpl } from "./modules/auth/auth.service";
 import { IAuthService, IOtpRepository } from "./modules/auth/auth.types";

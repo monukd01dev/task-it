@@ -15,13 +15,18 @@ export type LoginInput = z.infer<typeof loginSchema>['body'];
 export type VerfiyOtpInput = z.infer<typeof verifyOtpSchema>['body'];
 export type GoogleAuthInput = z.infer<typeof googleAuthSchema>['body'];
 
+export interface AuthTokens {
+    accessToken: string;
+    refreshToken: string;
+}
+
 export interface IAuthService {
     // 1. Local Auth
     signup(signupData: SignupInput): Promise<void>; 
-    verifyOtp(verifyData: VerfiyOtpInput): Promise<string>; // Returns JWT
-    login(loginData: LoginInput): Promise<string>; // Returns JWT
+    verifyOtp(verifyData: VerfiyOtpInput): Promise<AuthTokens>; // Returns JWT
+    login(loginData: LoginInput): Promise<AuthTokens>; // Returns JWT
     resendOtp(email:string):Promise<void>;
     // 2. Google Auth (Signup & Login handled together)
-    googleAuth(googleAuthData: GoogleAuthInput): Promise<string>; // Returns JWT
+    googleAuth(googleAuthData: GoogleAuthInput): Promise<AuthTokens>; // Returns JWT
 
 }

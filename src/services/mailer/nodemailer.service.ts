@@ -31,7 +31,7 @@ class NodemailerService implements IMailerService {
             return true;
         } catch (error) {
             logger.error({ err: error, email: to }, "Failed to send OTP email");
-            // Yahan hum false return karenge taaki app crash na ho
+            // return false so will not crash
             return false;
         };
     };
