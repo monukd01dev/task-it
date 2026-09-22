@@ -5,7 +5,7 @@ import taskRouter from "../../modules/tasks/task.routes";
 const v1Router = express.Router();
 
 v1Router.use(healthRouter)
-v1Router.use(authRouter)
+v1Router.use('/auth',authRouter)
 v1Router.use(taskRouter)
 
 

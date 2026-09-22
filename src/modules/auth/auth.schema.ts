@@ -69,6 +69,12 @@ import CONSTANTS from '../../constants';
         })
     });
 
+    export const resendOtpSchema = z.object({
+        body: z.strictObject({
+            email : emailPrimitive
+        })
+    })
+
     export const googleAuthSchema = z.object({
         body: z.strictObject({
             idToken: idTokenPrimitive

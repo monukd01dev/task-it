@@ -4,6 +4,8 @@
  * with standard Object.freeze for runtime security.
  */
 
+import ENV from "../config/env";
+
 const CONSTANTS = Object.freeze({
     PAYLOAD_LIMIT: '10kb',
     RATE_LIMIT_WINDOW: 15 * 60 * 1000, // 15 mins
@@ -47,7 +49,21 @@ const CONSTANTS = Object.freeze({
         GOOGLE_TOKEN_FORMAT: "Invalid Google ID Token format",
         GOOGLE_TOKEN_TOO_LONG: "Google ID Token is too long",
 
-    } as const)
+    } as const),
+
+    REFRESH_TOKEN_COOKIE_OPTIONS: Object.freeze({
+        httpOnly: true, //important: JS cannot read this cookie
+        secure: !ENV.IS_DEVELOPMENT, // Production (HTTPS) -> true, Localhost (HTTP) -> false
+        sameSite: 'strict', // to protect from CSRF attacks 
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 Days in milliseconds
+    } as const),
+
+    CLEAR_REFRESH_TOKEN_COOKIE_OPTIONS: Object.freeze({
+        httpOnly: true, //important: JS cannot read this cookie
+        secure: !ENV.IS_DEVELOPMENT, // Production (HTTPS) -> true, Localhost (HTTP) -> false
+        sameSite: 'strict', // to protect from CSRF attacks
+    } as const),
+
 } as const);
 
 export default CONSTANTS;

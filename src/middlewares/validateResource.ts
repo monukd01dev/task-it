@@ -4,11 +4,11 @@ import CONSTANTS from '../constants';
 import ValidationError from '../utils/ValidationError';
 
 
-const validateResource = async (schema: z.ZodType) =>
-    (req: Request, res: Response, next: NextFunction) => {
+const validateResource = (schema: z.ZodType) =>
+    async (req: Request, res: Response, next: NextFunction) => {
         try {
             //checking the data against schema 
-            schema.parse({
+            await schema.parseAsync({
                 body: req.body,
                 query: req.query,
                 params: req.params,
@@ -22,7 +22,7 @@ const validateResource = async (schema: z.ZodType) =>
             }
             next(error)
         };
-        return;
+
     }
 
 export default validateResource;

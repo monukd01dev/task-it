@@ -2,7 +2,7 @@ import { StatusCodes, ReasonPhrases } from "http-status-codes";
 import { IMailerService } from "../../services/mailer/mailer.types";
 import AppError from "../../utils/AppError";
 import { IUserRepository } from "../users/user.types";
-import { AuthTokens, GoogleAuthInput, IAuthService, IOtpRepository, LoginInput, SignupInput, VerfiyOtpInput } from "./auth.types";
+import { AuthTokens, GoogleAuthInput, IAuthService, IOtpRepository, LoginInput, ResendOtpInput, SignupInput, VerfiyOtpInput } from "./auth.types";
 import { IOtpService, IPasswordService, ITokenPayload, ITokenService } from "../../services/crypto/crypto.types";
 import logger from "../../config/logger";
 import { getOtpEmailTemplate } from "../../utils/email.templates";
@@ -84,7 +84,8 @@ export class AuthServiceImpl implements IAuthService {
         logger.info({ email }, "Signup successful, OTP email sent");
     }
 
-    async resendOtp(email: string): Promise<void> {
+    async resendOtp(resendData:ResendOtpInput): Promise<void> {
+        const {email} = resendData;
         const user = await this.userRepository.findByEmail(email);
 
         if (!user || user.isVerified) {

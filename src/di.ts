@@ -16,6 +16,7 @@ import { IMailerService } from "./services/mailer/mailer.types";
 import NodemailerService from "./services/mailer/nodemailer.service";
 import { GoogleAuthServiceImpl } from "./services/oauth/googleAuth.service";
 import { IOAuthService } from "./services/oauth/oauth.types";
+import { AuthController } from "./modules/auth/auth.controller";
 
 class DependencyInjector {
     private static instance: DependencyInjector;
@@ -27,8 +28,11 @@ class DependencyInjector {
     private readonly passwordService: IPasswordService;
     private readonly tokenService: ITokenService;
     private readonly oAuthService: IOAuthService;
-
+    
     private readonly authService: IAuthService;
+
+    public readonly authController: AuthController;
+
     private constructor() {
         // repositories 
         this.userRepository = new UserRepositoryImpl(UserModel);
@@ -42,6 +46,7 @@ class DependencyInjector {
         this.authService = new AuthServiceImpl(this.userRepository, this.otpRepository, this.mailerService, this.otpService, this.passwordService, this.tokenService,this.oAuthService);
         
         //controllers
+        this.authController = new AuthController(this.authService);
     }
 
     public static getInstance(): DependencyInjector {
