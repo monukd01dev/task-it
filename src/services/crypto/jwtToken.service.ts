@@ -8,8 +8,8 @@ export class TokenServiceImpl implements ITokenService {
     private readonly accessSecret = ENV.JWT_SECRET;
     private readonly refreshSecret = ENV.JWT_REFRESH_SECRET;
     private readonly jwtAlgorithm: jwt.Algorithm = 'HS256';
-    private readonly accessExpiresIn: ExpiresIn = ENV.JWT_ACCESS_EXPIRES_IN;
-    private readonly refreshExpiresIn: ExpiresIn = ENV.JWT_REFRESH_EXPIRES_IN;
+    private readonly accessExpiresIn: ExpiresIn = ENV.JWT_ACCESS_EXPIRES_IN as ExpiresIn;
+    private readonly refreshExpiresIn: ExpiresIn = ENV.JWT_REFRESH_EXPIRES_IN as ExpiresIn;
 
     public generateAccessToken(payload: ITokenPayload): string {
         return jwt.sign(payload, this.accessSecret, {

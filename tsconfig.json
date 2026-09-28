@@ -4,11 +4,15 @@
     "target": "es2025", //support mordern nodejs features
     "module": "commonjs", //best stable module sytem for express
 
+
     // Modules
-    "rootDir": "./src", //where is our code 
-    "outDir" : "./dist", //where to put compoiled code
     "esModuleInterop": true, //help old libraries written in js to work with es6 modules like express and cors etc
     "forceConsistentCasingInFileNames": true, // if saves you from the big problem while deploying I have faced it already
+
+    //path-aliases
+    "paths": {
+      "@/*": ["./src/*"] 
+    },
 
     // TypeChecking (Strictness)
     "strict": true,
@@ -18,6 +22,6 @@
     // Completeness
     "skipLibCheck": true,
   },
-  "include" : ["src/**/*"],
-  "exclude" : ["node_modules","dist","**/*.test.ts"],
+  "include" : ["src/**/*","test/**/*"],
+  "exclude" : ["node_modules","dist"],
 }
